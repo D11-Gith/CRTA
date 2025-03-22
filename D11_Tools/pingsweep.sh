@@ -28,14 +28,14 @@ print_banner() {
 
 #Chamada da função para exibir o banner
 print_banner
-# Função para exibir a barra de progresso
+#Função para exibir a barra de progresso
 barra_progresso() {
     local total=$1
     local atual=0
     local progresso=""
     local percent=0
 
-    # Calcula e exibe a barra de progresso
+    #Calcula e exibe a barra de progresso
     while [ $atual -le $total ]; do
         percent=$(( (atual * 100) / total ))
         progresso=$(printf "%-${total}s" "#" | sed 's/ /#/g' | head -c $atual)
@@ -68,8 +68,6 @@ echo
 #Arquivo de saída
 output_file="icmp.txt"
 > "$output_file"  #Limpa o arquivo antes de começar
-
-
 
 #Loop de 1 a 254 para escanear todos os IPs da sub-rede
 count=0

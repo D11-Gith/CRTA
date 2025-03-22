@@ -105,8 +105,8 @@ trap "echo -e '${vermelho}[!] Encerrando túnel SSH (PID: $SSH_PID)...${NC}'; ki
 # Aguarda alguns segundos para verificar se o túnel está ativo
 sleep 2
 if pgrep -f "ssh -N -L $local_port:$dest_host:$dest_port" > /dev/null; then
-    log_result "${verde_negrito}[✓] Túnel SSH estabelecido com sucesso! PID: $SSH_PID${NC}"
-    echo -e "${azul_negrito}[!] Para encerrar, pressione CTRL+C.${NC}"
+    log_result "${verde_negrito}[✓] SSH tunnel successfully established! PID: $SSH_PID${NC}"
+    echo -e "${azul_negrito}[!] To terminate, press CTRL+C.${NC}"
 else
     log_result "${vermelho}[X] Failed to establish SSH tunnel.${NC}"
     exit 1
