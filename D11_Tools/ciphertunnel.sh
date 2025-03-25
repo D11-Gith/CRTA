@@ -15,36 +15,26 @@ PROPRIETARIO="Danilo A. Rêgo"
 LINK_REPOSITORIO="https://github.com/D11-Gith/"
 LOG_FILE="ssh_tunnel_$(date +%Y%m%d_%H%M%S).log"
 
-# Habilita interrupção no caso de erro crítico
-set -e
-
-# Verifica se o SSH está instalado
-if ! command -v ssh &> /dev/null; then
-    echo -e "${vermelho}[X] Error: The 'ssh' command is not installed!${NC}"
-    exit 1
-fi
-
-# Verifica se o figlet está instalado e exibe banner
+# Função para exibir o banner
 print_banner() {
     echo -e "${amarelo_negrito}"
-    if command -v figlet &> /dev/null; then
-        figlet -f big "Cipher Tunnel"
-    else
-        echo "===== Cipher Tunnel ====="
-    fi
+    figlet -f big "Cipher Tunnel"
+    echo
     echo -e "${V}"
     echo -e "Owner: ${PROPRIETARIO}"
     echo -e "Repository: ${LINK_REPOSITORIO}${NC}"
-    echo
 }
 
-# Registra log
-log_result() {
-    echo -e "$1" | tee -a "$LOG_FILE"
-}
-
-# Chamada da função para exibir o banner
+#Chamada da função para exibir o banner
 print_banner
+# Habilita interrupção no caso de erro crítico
+set -e
+
+# Verifica se o SSH e o sshpass estão instalados
+if ! command -v ssh &> /dev/null || ! command -v sshpass &> /dev/null; then
+    echo -e "${vermelho}[X] Error: The 'ssh' or 'sshpass' command is not installed!${NC}"
+    exit 1
+fi
 
 # Função para validar portas
 validar_porta() {
@@ -74,12 +64,16 @@ if [ $# -lt 5 ]; then
 
     echo -ne "${azul_negrito}[+] Enter the destination host (forwarding):${NC} "
     read -r dest_host
+
+    echo -ne "${azul_negrito}[+] Enter the SSH password:${NC} "
+    read -s ssh_pass
 else
     local_port="$1"
     ssh_host="$2"
     ssh_user="$3"
     dest_port="$4"
     dest_host="$5"
+    ssh_pass="$6"
     validar_porta "$local_port"
     validar_porta "$dest_port"
 fi
@@ -95,8 +89,9 @@ log_result "${verde_negrito}[✓] Forwarding Port:${NC} $dest_port"
 log_result "${verde_negrito}[✓] Destination Host:${NC} $dest_host"
 echo
 
-# Executa o túnel SSH em segundo plano
-ssh -N -L "$local_port:$dest_host:$dest_port" "$ssh_user@$ssh_host" -o ConnectTimeout=10 &>> "$LOG_FILE" &
+# Executa o túnel SSH com o sshpass para passar a senha automaticamente
+sshpass -p "$ssh_pass" ssh -N -L "$local_port:$dest_host:$dest_port" "$ssh_user@$ssh_host" -o ConnectTimeout=10 &>> "$LOG_FILE" &
+
 SSH_PID=$!
 
 # Função para encerrar túnel ao sair

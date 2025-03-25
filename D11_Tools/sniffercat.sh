@@ -14,7 +14,7 @@ V="v1.2 Netcat - Verifying Open Ports with Logging"
 OWNER="Danilo A. Rêgo"
 REPOSITORY_LINK="https://github.com/D11-Gith/"
 LOG_FILE="netcat_scan_$(date +%Y%m%d_%H%M%S).log"
-TIMEOUT=3  #Timeout for connections (user-adjustable)
+TIMEOUT=3  # Timeout for connections (user-adjustable)
 
 # Checks if the required commands are installed
 for cmd in nc figlet host; do
@@ -24,7 +24,7 @@ for cmd in nc figlet host; do
     fi
 done
 
-#Function to display the banner
+# Function to display the banner
 print_banner() {
     echo -e "${bold_yellow}"
     figlet -f big "Sniffer Cat"
@@ -34,12 +34,12 @@ print_banner() {
     echo
 }
 
-#Logs result
+# Logs result
 log_result() {
     echo -e "$1" | tee -a "$LOG_FILE"
 }
 
-#Call the function to display the banner
+# Call the function to display the banner
 print_banner
 
 # If no arguments are passed, enter interactive mode
@@ -52,7 +52,7 @@ if [ $# -lt 2 ]; then
     echo -ne "${bold_blue}[+] Enter the ports to test or provide a .txt file with the list:${NC} "
     read -r port_input
 
-    #Check if the input is a .txt file or a list of entered ports
+    # Check if the input is a .txt file or a list of entered ports
     if [[ -f "$port_input" ]]; then
         mapfile -t ports < "$port_input"
         echo -e "${bold_green}[✓] File detected! Ports loaded from the file:${NC} ${ports[*]}"
@@ -66,7 +66,7 @@ else
 fi
 
 echo
-#Display target information
+# Display target information
 log_result "${bold_green}[✓]${NC}${bold_blue} Target${NC} -> ${bold_green}$ip${NC}"
 log_result "${bold_green}[✓]${NC}${bold_blue} Ports to test${NC} -> ${bold_green}${ports[*]}${NC}"
 echo # Blank line for organization
@@ -75,32 +75,28 @@ echo # Blank line for organization
 for port in "${ports[@]}"; do
     log_result "${bold_yellow}[+] Testing connection on $ip:$port${NC}"
 
-    #Try to connect using netcat (nc) with configurable timeout
+    # Try to connect using netcat (nc) with configurable timeout
     result=$(echo -e "whoami" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
 
     if [ -n "$result" ]; then
         log_result "${bold_green}[✓] Connection successful on $ip:$port${NC}"
 
-        #Run additional commands only if connection is successful
-        log_result "${bold_blue}[>] Executing pwd...${NC}"
-        log_result "$(pwd)"
-
-        log_result "${bold_blue}[>] Executing hostname...${NC}"
-        log_result "$(hostname)"
-
-        log_result "${bold_blue}[>] Executing whoami...${NC}"
+        # Run additional commands only if connection is successful
+        log_result "${bold_blue}[>] Executing remote pwd...${NC}"
+        result=$(echo -e "pwd" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
         log_result "$result"
 
-        log_result "${bold_blue}[>] Executing ls...${NC}"
-        log_result "$(ls)"
+        log_result "${bold_blue}[>] Executing remote hostname...${NC}"
+        result=$(echo -e "hostname" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
+        log_result "$result"
 
-        log_result "${bold_blue}[>] Searching for sensitive files...${NC}"
-        locate "*.txt" | grep -i "credentials\|mysql\|password\|key\|support\|config\|secrets\|secret\|id_rsa\|id_dsa\
-        |token\|auth\|db\|ssh\|access\|private\|env\|vault\|backup\|dump\|admin\|user\|login\|session\|cert\|apikey\|jwt\|htpasswd\|htaccess\
-        |config\|database\|config.php\|credential" >> "$LOG_FILE"
+        log_result "${bold_blue}[>] Executing remote whoami...${NC}"
+        result=$(echo -e "whoami" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
+        log_result "$result"
 
-        log_result "${bold_blue}[>] Executing ip a...${NC}"
-        log_result "$(ip a)"
+        log_result "${bold_blue}[>] Executing remote ls...${NC}"
+        result=$(echo -e "ls" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
+        log_result "$result"
 
     else
         log_result "${red}[X] Connection failed on $ip:$port${NC}"
