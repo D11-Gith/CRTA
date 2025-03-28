@@ -57,25 +57,33 @@ Exemplo de saída:
 - [+] Results saved in -> icmp.txt
 
 ##
-# 2. SnifferCat - Verificação de Portas Abertas com Registro de Log
+# 2.Sniffer Cat - Netcat Interactive Bind Shell com Registro de Log
     
-O SnifferCat foi desenvolvido para verificar portas abertas em um alvo especificado e realizar interações de teste, como whoami, pwd e ls, registrando os resultados em um arquivo de log.
+Sniffer Cat é um script interativo em Bash que automatiza testes de conexão com serviços remotos utilizando Netcat. Ele permite identificar portas acessíveis, interagir com um shell remoto e executar comandos pré-definidos para coleta de informações sobre o sistema alvo.
 
 Como Usar:
 - Clonar o repositório: git clone https://github.com/[seu_usuario]/[repositorio].git
 
 Funcionalidades:
 
-- Verificação de portas abertas em um IP ou domínio fornecido.
+-  Testa conexões em várias portas de um host alvo.
 
-- Execução de comandos remotos, como whoami, hostname, pwd, ls, entre outros.
+- Se conecta a serviços que aceitam comandos via Netcat.
 
-- Busca de arquivos sensíveis no sistema remoto.
+- Interface interativa para seleção de comandos.
 
-- Suporte a CipherTunnel para estabelecer conexões seguras.
+- Registro automático dos resultados em um arquivo de log.
 
-- Registro de todos os resultados em um arquivo de log.
+- Menus para executar comandos organizados em categorias:
 
+- Identidade e usuário
+
+- Manipulação de arquivos e diretórios
+
+- Rede
+
+- Sistema e processos
+  
 Pré-requisitos:
 
 - Antes de executar o SnifferCat, você precisa garantir que os seguintes comandos estão instalados:
@@ -107,18 +115,19 @@ Como Funciona:
 
 Exemplo de saída:
 
-- [✓] Target -> example.com
-- [✓] Ports to test -> 80 443 8080
-- [+] Testing connection on example.com:80
-- [✓] Connection successful on example.com:80
-- [>] Executing pwd... /home/user
-- [>] Executing hostname... server.local
-- [>] Executing whoami... user
-- [>] Executing ls... file1.txt file2.conf secret_key.pem
+- $ ./sniffer_cat.sh 192.168.1.100 22,80,443
+- [+] Testing connection on 192.168.1.100:22...
+- [✓] Connection successful on 192.168.1.100:22
+- [X] Connection failed on 192.168.1.100:80
+- [X] Connection failed on 192.168.1.100:443
+   
+- [+] Conexões bem-sucedidas detectadas:
+- 1) 192.168.1.100:22
+- [>] Escolha uma opção:
 - [!] Results saved in: netcat_scan_20230315_133000.log
 ##
 # 3. SSH Tunnel - Secure Connection Manager
-Versão: v1.0
+Versão: v1.2
 Proprietário: Danilo A. Rêgo
 Repositório: GitHub
 
