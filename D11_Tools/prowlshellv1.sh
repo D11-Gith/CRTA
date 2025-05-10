@@ -27,7 +27,7 @@ done
 # Function to display the banner
 print_banner() {
     echo -e "${bold_yellow}"
-    figlet -f big "Sniffer Cat"
+    figlet -f big "ProwlShell"
     echo -e "${V}"
     echo -e "Owner: ${OWNER}"
     echo -e "Repository: ${REPOSITORY_LINK}${NC}"
@@ -41,60 +41,64 @@ log_result() {
 
 # Function to display the menu
 menu_principal() {
-    echo -e "${bold_green}[+] Escolha uma categoria de comandos:${NC}"
+    echo -e "${bold_green}[+] Choose a command category:${NC}"
     echo
-    echo -e "${bold_green}1)${NC} ${bold_blue}Comandos de Identidade e Usuário${NC}"
-    echo -e "${bold_green}2)${NC} ${bold_blue}Comandos de Manipulação de Arquivos e Diretórios${NC}"
-    echo -e "${bold_green}3)${NC} ${bold_blue}Comandos de Rede${NC}"
-    echo -e "${bold_green}4)${NC} ${bold_blue}Comandos de Sistema e Processos${NC}"
-    echo -e "${bold_green}5)${NC} ${bold_blue}Sair${NC}"
-    echo -ne "${bold_blue}[>] Escolha uma opção:${NC} "
+    echo -e "${bold_green}1)${NC} ${bold_blue}Identity and User Commands${NC}"
+    echo -e "${bold_green}2)${NC} ${bold_blue}File and Directory Manipulation Commands${NC}"
+    echo -e "${bold_green}3)${NC} ${bold_blue}Network Commands${NC}"
+    echo -e "${bold_green}4)${NC} ${bold_blue}System and Process Commands${NC}"
+    echo -e "${bold_green}5)${NC} ${bold_blue}Exit${NC}"
+    echo
+    echo -ne "${bold_blue}[>] Choose an option:${NC} "
 }
 
 menu_comandos() {
     local categoria="$1"
+    echo
     case "$categoria" in
         1)
-            echo -e "${bold_green}Comandos de Identidade e Usuário:${NC}"
-            echo -e "1) whoami"
-            echo -e "2) id"
-            echo -e "3) groups"
-            echo -e "4) hostname"
-            echo -e "5) Voltar ao Menu Principal"
+            echo -e "${bold_green}Identity and User Commands:${NC}"
+            echo -e "${bold_green}1)${NC}${bold_blue} whoami${NC}"
+            echo -e "${bold_green}2)${NC}${bold_blue} id${NC}"
+            echo -e "${bold_green}3)${NC}${bold_blue} groups${NC}"
+            echo -e "${bold_green}4)${NC}${bold_blue} hostname${NC}"
+            echo -e "${bold_green}5)${NC}${bold_blue} Back to Main Menu${NC}"
             ;;
         2)
-            echo -e "${bold_green}Comandos de Manipulação de Arquivos e Diretórios:${NC}"
-            echo -e "1) pwd"
-            echo -e "2) ls -la"
-            echo -e "3) cat /etc/passwd"
-            echo -e "4) du -sh *"
-            echo -e "5) Voltar ao Menu Principal"
+            echo -e "${bold_green}File and Directory Manipulation Commands:${NC}"
+            echo -e "${bold_green}1)${NC}${bold_blue} pwd${NC}"
+            echo -e "${bold_green}2)${NC}${bold_blue} ls -la${NC}"
+            echo -e "${bold_green}3)${NC}${bold_blue} cat /etc/passwd${NC}"
+            echo -e "${bold_green}4)${NC}${bold_blue} du -sh *"
+            echo -e "${bold_green}5)${NC}${bold_blue} Back to Main Menu${NC}"
             ;;
         3)
-            echo -e "${bold_green}Comandos de Rede:${NC}"
-            echo -e "1) ifconfig"
-            echo -e "2) ip a"
-            echo -e "3) netstat -tulnp"
-            echo -e "4) ss -tulnp"
-            echo -e "5) Voltar ao Menu Principal"
+            echo -e "${bold_green}Network Commands:${NC}"
+            echo -e "${bold_green}1)${NC}${bold_blue} ifconfig${NC}"
+            echo -e "${bold_green}2)${NC}${bold_blue} ip a${NC}"
+            echo -e "${bold_green}3)${NC}${bold_blue} netstat -tulnp${NC}"
+            echo -e "${bold_green}4)${NC}${bold_blue} ss -tulnp${NC}"
+            echo -e "${bold_green}5)${NC}${bold_blue} Back to Main Menu${NC}"
             ;;
         4)
-            echo -e "${bold_green}Comandos de Sistema e Processos:${NC}"
-            echo -e "1) uname -a"
-            echo -e "2) ps aux"
-            echo -e "3) df -h"
-            echo -e "4) uptime"
-            echo -e "5) Voltar ao Menu Principal"
+            echo -e "${bold_green}System and Process Commands:${NC}"
+            echo -e "${bold_green}1)${NC}${bold_blue} uname -a${NC}"
+            echo -e "${bold_green}2)${NC}${bold_blue} ps aux${NC}"
+            echo -e "${bold_green}3)${NC}${bold_blue} df -h${NC}"
+            echo -e "${bold_green}4)${NC}${bold_blue} uptime${NC}"
+            echo -e "${bold_green}5)${NC}${bold_blue} Back to Main Menu${NC}"
             ;;
     esac
-    echo -ne "${bold_blue}[>] Escolha uma opção:${NC} "
+    echo
+    echo -ne "${bold_green}[>] Choose an option:${NC} "
 }
 
 executar_comando() {
     local cmd="$1"
-    echo -e "${bold_blue}[>] Executando remoto: ${cmd}${NC}"
+    echo -e "${bold_green}[>] Executing remotely: ${cmd}${NC}"
     resultado=$(echo -e "$cmd" | nc -w "$TIMEOUT" "$ip" "$port" 2>/dev/null)
     log_result "$resultado"
+    echo
 }
 
 # Call the function to display the banner
@@ -104,25 +108,33 @@ print_banner
 if [ $# -eq 0 ]; then
     echo -e "${bold_yellow}No arguments passed. Entering interactive mode...${NC}"
     echo
-    echo -ne "${bold_blue}[+] Insira o IP de destino:${NC} "
+    echo -ne "${bold_blue}[+] Enter the target IP:${NC} "
     read -r ip
 
-    echo -ne "${bold_blue}[+] Insira as portas a serem testadas (ou forneça um arquivo .txt):${NC} "
+    echo -ne "${bold_blue}[+] Enter the ports to be tested (or provide a .txt file):${NC} "
     read -r ports_input
 
+    # If a file is detected, load the ports and display the message
     if [[ -f "$ports_input" ]]; then
-        echo -e "${bold_green}[✓] Arquivo detectado! Carregando portas do arquivo...${NC}"
+        echo -e "${bold_green}[✓] File detected! Ports loaded from the file: $(cat "$ports_input" | tr '\n' ' ')${NC}"
         mapfile -t ports < "$ports_input"
     else
         IFS=',' read -ra ports <<< "$ports_input"
     fi
+
+    # Display target IP and ports to be tested
+    echo
+    echo -e "${bold_green}[✓]${NC}${bold_blue} Target${NC} -> ${bold_green}$ip${NC}"
+    echo -e "${bold_green}[✓]${NC}${bold_blue} Ports to test${NC} ->  ${bold_green}${ports[*]}${NC}"
+    sleep 3
+    echo
 else
     ip="$1"
     shift
     ports=("$@")
 fi
 
-# Test connections and execute commands
+# Test the connections and display results for each port individually
 declare -A active_connections
 
 for port in "${ports[@]}"; do
@@ -132,20 +144,25 @@ for port in "${ports[@]}"; do
     if [ -n "$result" ]; then
         log_result "${bold_green}[✓] Connection successful on $ip:$port${NC}"
         active_connections["$ip:$port"]=1
+        echo
     else
         log_result "${red}[X] Connection failed on $ip:$port${NC}"
+        echo
     fi
 done
 
 # If there are successful connections, let the user choose which one to interact with
 if [ ${#active_connections[@]} -gt 0 ]; then
-    echo -e "${bold_green}[+] Conexões bem-sucedidas detectadas:${NC}"
+    echo -e "${bold_green}[+] Successful connections detected:${NC}"
+    echo
+    echo -e "${bold_green}[>] Choose an option${NC}"
     select connection in "${!active_connections[@]}"; do
         if [ -n "$connection" ]; then
             ip_port=(${connection//:/ })
             ip="${ip_port[0]}"
             port="${ip_port[1]}"
-            echo -e "${bold_blue}[+] Selecionado: $connection${NC}"
+            echo -e "${bold_green}[+] Selected: $connection${NC}"
+            echo
 
             # Now let the user interact with the menu
             while true; do
@@ -163,7 +180,7 @@ if [ ${#active_connections[@]} -gt 0 ]; then
                                 3) executar_comando "groups" ;;
                                 4) executar_comando "hostname" ;;
                                 5) break ;;
-                                *) echo -e "${red}[X] Opção inválida!${NC}" ;;
+                                *) echo -e "${red}[X] Invalid option!${NC}" ;;
                             esac
                         done
                         ;;
@@ -177,7 +194,7 @@ if [ ${#active_connections[@]} -gt 0 ]; then
                                 3) executar_comando "cat /etc/passwd" ;;
                                 4) executar_comando "du -sh *" ;;
                                 5) break ;;
-                                *) echo -e "${red}[X] Opção inválida!${NC}" ;;
+                                *) echo -e "${red}[X] Invalid option!${NC}" ;;
                             esac
                         done
                         ;;
@@ -191,7 +208,7 @@ if [ ${#active_connections[@]} -gt 0 ]; then
                                 3) executar_comando "netstat -tulnp" ;;
                                 4) executar_comando "ss -tulnp" ;;
                                 5) break ;;
-                                *) echo -e "${red}[X] Opção inválida!${NC}" ;;
+                                *) echo -e "${red}[X] Invalid option!${NC}" ;;
                             esac
                         done
                         ;;
@@ -205,24 +222,25 @@ if [ ${#active_connections[@]} -gt 0 ]; then
                                 3) executar_comando "df -h" ;;
                                 4) executar_comando "uptime" ;;
                                 5) break ;;
-                                *) echo -e "${red}[X] Opção inválida!${NC}" ;;
+                                *) echo -e "${red}[X] Invalid option!${NC}" ;;
                             esac
                         done
                         ;;
                     5)
-                        echo -e "${bold_red}[!] Encerrando conexão...${NC}"
+                        echo -e "${bold_yellow}[!] Closing connection...${NC}"
+                        sleep 3
                         exit 0
                         ;;
                     *)
-                        echo -e "${red}[X] Opção inválida!${NC}"
+                        echo -e "${red}[X] Invalid option!${NC}"
                         ;;
                 esac
             done
         else
-            echo -e "${red}[X] Opção inválida!${NC}"
+            echo -e "${red}[X] Invalid option!${NC}"
         fi
     done
 else
-    echo -e "${red}[X] Nenhuma conexão bem-sucedida foi detectada.${NC}"
+    echo -e "${red}[X] No successful connections detected.${NC}"
     exit 1
 fi
